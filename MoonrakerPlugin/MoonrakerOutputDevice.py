@@ -5,6 +5,7 @@ from enum import Enum
 from io import BytesIO, StringIO
 from typing import cast
 from time import sleep
+from pprint import pformat
 
 from cura.CuraApplication import CuraApplication
 
@@ -169,7 +170,12 @@ class MoonrakerOutputDevice(OutputDevice):
     def checkPrinterState(self, reply=None):
         if reply:
             res = self._verifyReply(reply)
-            state = res['result']['state']
+            try:
+                state = res['result']['state']
+            except Exception as e:
+                Logger.log("d", "Unable to get key res['result']['state']")
+                Logger.log("d", pformat(res))
+                raise Exception
 
             if self._startPrint:
                 if state == 'ready':
